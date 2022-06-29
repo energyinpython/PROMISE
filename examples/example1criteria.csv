@@ -1,0 +1,13 @@
+Cj,Name,Unit,Preference Direction
+C1,Investment cost,mln PLN,Min
+C2,Payback period,years,Min
+C3,Distance from power stations,km,Min
+C4,Mean sea water depth,m,Min
+C5,Undersea geological condition,points [1-4],Min
+C6,Employment,number,Max
+C7,Conflict with fisheries,points [1–5],Min
+C8,Density of shipping traffic,points [1–5],Min
+C9,Distance from shore,km,Max
+C10,Influence on protected areas,points [1–5],Min
+C11,CO2 reduction,tonnes,Max
+C12,SO2 reduction,tonnes,Max

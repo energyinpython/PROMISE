@@ -78,6 +78,46 @@ class Test_PROMETHEE_II_2(unittest.TestCase):
         self.assertEqual(list(np.round(test_result, 4)), list(real_result))
 
 
+# Test for the PROMETHEE II method no 3
+class Test_PROMETHEE_II_3(unittest.TestCase):
+
+    def test_promethee_II(self):
+        """Ziemba, P., Wątróbski, J., Zioło, M., & Karczmarczyk, A. (2017). Using the PROSA method 
+        in offshore wind farm location problems. Energies, 10(11), 1755.
+        DOI: https://doi.org/10.3390/en10111755"""
+
+        matrix = np.array([[16347, 14219, 8160, 8160],
+        [9, 8.5, 9, 8.5],
+        [73.8, 55, 64.8, 62.5],
+        [36.7, 36, 28.5, 29.5],
+        [1.5, 2, 2, 1.5],
+        [3730, 3240, 1860, 1860],
+        [2, 1, 2, 1],
+        [1, 1, 2, 3],
+        [38.8, 33.1, 45.8, 27.3],
+        [4, 2, 4, 3],
+        [1720524, 1496512, 858830, 858830],
+        [40012, 34803, 19973, 19973]])
+
+        matrix = matrix.T
+
+        weights = np.array([20, 5, 5, 1.67, 1.67, 11.67, 11.67, 5, 5, 16.67, 8.33, 8.33])
+        weights = weights / np.sum(weights)
+
+        types = np.array([-1, -1, -1, -1, -1, 1, -1, -1, 1, -1, 1, 1])
+
+        p = np.array([7280, 4, 13.4, 7.4, 3, 1662, 3, 3, 13.8, 3, 766240, 17820])
+
+        promethee_II = PROMETHEE_II()
+        preference_functions = [promethee_II._vshape_function for pf in range(len(weights))]
+
+        test_result = promethee_II(matrix, weights, types, preference_functions, p)
+        
+        real_result = np.array([-0.0445, 0.1884, -0.0954, -0.0485])
+
+        self.assertEqual(list(np.round(test_result, 4)), list(real_result))
+
+
 # Test for the PROSA-C method (PROSA Examining Sustainability at the Criteria Level)
 class Test_PROSA_C(unittest.TestCase):
 
@@ -374,6 +414,9 @@ def main():
     test_promethee_II.test_promethee_II()
 
     test_promethee_II = Test_PROMETHEE_II_2()
+    test_promethee_II.test_promethee_II()
+
+    test_promethee_II = Test_PROMETHEE_II_3()
     test_promethee_II.test_promethee_II()
 
     test_prosa_c = Test_PROSA_C()
