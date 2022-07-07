@@ -1,10 +1,10 @@
 import itertools
 import numpy as np
 
-from .promethee import PROMETHEE_II
+from promethee import PROMETHEE_II
 
 
-
+# dziedziczenie z PROMETHEE II preference functions and MCDA_method
 # PROSA Examining Sustainability at the Criteria Level (PROSA-C)
 class PROSA_C(PROMETHEE_II):
     def __init__(self):
@@ -12,7 +12,6 @@ class PROSA_C(PROMETHEE_II):
         Create the PROSA method object
         """
         pass
-
 
     def __call__(self, matrix, weights, types, preference_functions, p = None, q = None, s = None):
         if p is None:
@@ -38,6 +37,60 @@ class PROSA_C(PROMETHEE_II):
             raise ValueError('The length of the vector s must be equal to the number of criteria')
 
         return PROSA_C._prosa_c(self, matrix, weights, types, preference_functions, p, q, s)
+
+
+    # # Preference fucntion type 1 (Usual criterion) requires no parameters
+    # # alternatives are indifferent only if they are equal to each other
+    # # otherwise there is a strong preference for one of them
+    # def _usual_function(self, d, p, q):
+    #     if d <= 0:
+    #         return 0
+    #     else:
+    #         return 1
+
+    # # Preference function type 2 (U-shape criterion) requires indifference threshold (q)
+    # def _ushape_function(self, d, p, q):
+    #     if d <= q:
+    #         return 0
+    #     else:
+    #         return 1
+
+    # # Preference function type 3 (V-shape criterion) requires threshold of absolute preference (p) 
+    # def _vshape_function(self, d, p, q):
+    #     if d <= 0:
+    #         return 0
+    #     elif 0 <= d <= p:
+    #         return d / p
+    #     elif d > p:
+    #         return 1
+
+    # # preference function type 4 (Level criterion) requires both preference and indifference thresholds (p and q)
+    # def _level_function(self, d, p, q):
+    #     if d <= q:
+    #         return 0
+    #     elif q <= d <= p:
+    #         return 0.5
+    #     elif d > p:
+    #         return 1
+
+    # # Preference function type 5 (V-shape with indifference criterion also known as linear)
+    # # requires both preference and indifference thresholds (p and q)
+    # def _linear_function(self, d, p, q):
+    #     if d <= q:
+    #         return 0
+    #     elif q <= d <= p:
+    #         return (d - q) / (p - q)
+    #     elif d > p:
+    #         return 1
+
+    # # preference function type 6 (Gaussian criterion)
+    # # requires to fix parameter s which is an intermediate value between q and p
+    # def _gaussian_function(self, d, p, q):
+    #     if d <= 0:
+    #         return 0
+    #     elif d > 0:
+    #         s = (p + q) / 2
+    #         return 1 - np.exp(-((d ** 2) / (2 * s ** 2)))
 
 
     @staticmethod
@@ -76,7 +129,7 @@ class PROSA_C(PROMETHEE_II):
         >>> p = 2 * u
         >>> q = 0.5 * u
         >>> s = np.repeat(0.3, len(weights))
-        >>> pref = promethee_II(matrix, weights, types, preference_functions, p = p, q = q, s = s)
+        >>> pref = promethee_II(matrix, weights, types, preference_functions, p, q, s)
         >>> rank = rank_preferences(pref, reverse = True)
         """
 

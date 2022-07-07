@@ -1,6 +1,6 @@
 import itertools
 import numpy as np
-from .mcda_method import MCDA_method
+from mcda_method import MCDA_method
 
 
 class PROMETHEE_II(MCDA_method):
@@ -9,7 +9,6 @@ class PROMETHEE_II(MCDA_method):
         Create the PROMETHEE II method object
         """
         pass
-
 
     def __call__(self, matrix, weights, types, preference_functions, p = None, q = None):
         PROMETHEE_II._verify_input_data(matrix, weights, types)
@@ -60,17 +59,17 @@ class PROMETHEE_II(MCDA_method):
     def _level_function(self, d, p, q):
         if d <= q:
             return 0
-        elif q < d <= p:
+        elif q <= d <= p:
             return 0.5
         elif d > p:
             return 1
 
-    # Preference function type 5 (V-shape with indifference criterion also known as linear)
+    # Preference function type 5 (V-shape eith indifference criterion also known as linear)
     # requires both preference and indifference thresholds (p and q)
     def _linear_function(self, d, p, q):
         if d <= q:
             return 0
-        elif q < d <= p:
+        elif q <= d <= p:
             return (d - q) / (p - q)
         elif d > p:
             return 1
@@ -118,7 +117,7 @@ class PROMETHEE_II(MCDA_method):
         >>> u = np.sqrt(np.sum(np.square(np.mean(matrix, axis = 0) - matrix), axis = 0) / matrix.shape[0])
         >>> p = 2 * u
         >>> q = 0.5 * u
-        >>> pref = promethee_II(matrix, weights, types, preference_functions, p = p, q = q)
+        >>> pref = promethee_II(matrix, weights, types, preference_functions, p, q)
         >>> rank = rank_preferences(pref, reverse = True)
         """
 

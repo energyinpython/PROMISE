@@ -14,89 +14,6 @@ from pyrepo import correlations as corrs
 from pyrepo import normalizations as norms
 from pyrepo import weighting_methods as mcda_weights
 
-import itertools
-import sys
-
-from scipy import linalg
-
-# CILOS weighting
-def cilos_weighting(matrix, types):
-    """
-    Calculate criteria weights using objective CILOS weighting method.
-
-    Parameters
-    ----------
-        matrix : ndarray
-            Decision matrix with performance values of m alternatives and n criteria.
-        types : ndarray
-            Vector with criteria types.
-            
-    Returns
-    -------
-        ndarray
-            Vector of criteria weights.
-
-    Examples
-    >>> weights = cilos_weighting(matrix, types)
-    """
-    xr = copy.deepcopy(matrix)
-    # Convert negative criteria to positive criteria
-    xr[:, types == -1] = np.min(matrix[:, types == -1], axis = 0) / matrix[:, types == -1]
-    # Normalize the decision matrix `xr` using the sum normalization method
-    xn = xr / np.sum(xr, axis = 0)
-    
-    # Calculate the square matrix
-    A = xn[np.argmax(xn, axis = 0), :]
-    
-    # Calculate relative impact loss matrix
-    pij = np.zeros((matrix.shape[1], matrix.shape[1]))
-    for j, i in itertools.product(range(matrix.shape[1]), range(matrix.shape[1])):
-        pij[i, j] = (A[j, j] - A[i, j]) / A[j, j]
-
-    # Determine the weight system matrix
-    F = np.diag(-np.sum(pij - np.diag(np.diag(pij)), axis = 0)) + pij
-    print(F.shape)
-    # Calculate the criterion impact loss weight
-    # The criteria weights q are determined from the formulated homogeneous linear system of equations
-    # AA is the vector near 0
-    AA = np.zeros(F.shape[0])
-    # To determine the value of A we assume that the first element of A is close to 0 while others are zeros
-    AA[0] = sys.float_info.epsilon
-    # Solve the system equation
-    q = np.linalg.inv(F).dot(AA)
-    # Calculate and return the final weights of the criteria
-    return q / np.sum(q)
-
-
-# IDOCRIW weighting
-def idocriw_weighting(matrix, types):
-    """
-    Calculate criteria weights using objective IDOCRIW weighting method.
-
-    Parameters
-    ----------
-        matrix : ndarray
-            Decision matrix with performance values of m alternatives and n criteria.
-        types : ndarray
-            Vector with criteria types.
-            
-    Returns
-    -------
-        ndarray
-            Vector of criteria weights.
-
-    Examples
-    ---------
-    >>> weights = idocriw_weighting(matrix, types)
-    """
-    # Calculate the Entropy weights
-    q = mcda_weights.entropy_weighting(matrix)
-    # Calculate the CILOS weights
-    w = cilos_weighting(matrix, types)
-    # Aggregate the weight value of the attributes considering Entropy and CILOS weights
-    weights = (q * w) / np.sum(q * w)
-    return weights
-
 
 # Functions for visualizations
 
@@ -238,33 +155,35 @@ class Create_dictionary(dict):
 # main
 def main():
 
-    # matrix = np.array([[155.3, 74.0, 340, 673, 456.0, 111, 115, 106, 244, 39.8, 65440],
-    #     [162.2, 79.5, 247, 639, 283.0, 113, 118, 107, 263, 38.8, 60440],
-    #     [112.5, 68.0, 198, 430, 266.0, 98, 105, 91, 230, 38.1, 56575],
-    #     [90.1, 66.0, 150, 360, 201.2, 120, 131, 109, 259, 34.8, 32495],
-    #     [99.4, 77.0, 150, 310, 201.2, 97, 102, 90, 260, 36.4, 45635],
-    #     [89.5, 40.0, 110, 320, 147.5, 111, 123, 99, 226, 34.8, 28425],
-    #     [124.3, 95.0, 125, 247, 187.7, 78, 78, 77, 222, 40.0, 84595],
-    #     [155.3, 79.2, 160, 300, 214.6, 79, 79, 80, 227, 38.4, 105150],
-    #     [162.2, 100.0, 205, 420, 502.9, 120, 124, 115, 402, 40.3, 96440],
-    #     [96.3, 39.2, 100, 395, 134.1, 120, 132, 108, 258, 34.8, 35245],
-    #     [162.2, 100.0, 205, 420, 502.9, 98, 103, 93, 371, 40.8, 127940],
-    #     [102.5, 38.3, 101, 295, 136.1, 133, 145, 121, 170, 34.8, 34250]])
+    matrix = np.array([[155.3, 74.0, 340, 673, 456.0, 111, 115, 106, 244, 39.8, 65440],
+        [162.2, 79.5, 247, 639, 283.0, 113, 118, 107, 263, 38.8, 60440],
+        [112.5, 68.0, 198, 430, 266.0, 98, 105, 91, 230, 38.1, 56575],
+        [90.1, 66.0, 150, 360, 201.2, 120, 131, 109, 259, 34.8, 32495],
+        [99.4, 77.0, 150, 310, 201.2, 97, 102, 90, 260, 36.4, 45635],
+        [89.5, 40.0, 110, 320, 147.5, 111, 123, 99, 226, 34.8, 28425],
+        [124.3, 95.0, 125, 247, 187.7, 78, 78, 77, 222, 40.0, 84595],
+        [155.3, 79.2, 160, 300, 214.6, 79, 79, 80, 227, 38.4, 105150],
+        [162.2, 100.0, 205, 420, 502.9, 120, 124, 115, 402, 40.3, 96440],
+        [96.3, 39.2, 100, 395, 134.1, 120, 132, 108, 258, 34.8, 35245],
+        [162.2, 100.0, 205, 420, 502.9, 98, 103, 93, 371, 40.8, 127940],
+        [102.5, 38.3, 101, 295, 136.1, 133, 145, 121, 170, 34.8, 34250]])
+
+    types = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1])
 
     
 
-    matrix = np.array([[80, 16, 2, 5],
-    [110, 32, 2, 9],
-    [130, 64, 4, 9],
-    [185, 64, 4, 1],
-    [135, 64, 3, 4],
-    [140, 32, 3, 5],
-    [185, 64, 6, 7],
-    [110, 16, 3, 3],
-    [120, 16, 4, 3],
-    [340, 128, 6, 5]])
+    # matrix = np.array([[80, 16, 2, 5],
+    # [110, 32, 2, 9],
+    # [130, 64, 4, 9],
+    # [185, 64, 4, 1],
+    # [135, 64, 3, 4],
+    # [140, 32, 3, 5],
+    # [185, 64, 6, 7],
+    # [110, 16, 3, 3],
+    # [120, 16, 4, 3],
+    # [340, 128, 6, 5]])
 
-    types = np.array([-1, 1, 1, 1])
+    # types = np.array([-1, 1, 1, 1])
 
     # Symbols for alternatives Ai
     list_alt_names = [r'$A_{' + str(i) + '}$' for i in range(1, matrix.shape[0] + 1)]

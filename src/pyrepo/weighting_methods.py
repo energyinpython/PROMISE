@@ -1,8 +1,8 @@
 import copy
-import sys
 import itertools
 
 import numpy as np
+from scipy import linalg
 from .correlations import pearson_coeff
 from .normalizations import sum_normalization, minmax_normalization
 
@@ -174,7 +174,7 @@ def gini_weighting(matrix):
                 Yi += np.sum(np.abs(matrix[i, j] - matrix[:, j]) / (m**2 - m))
 
         G[j] = Yi
-    # calculate and return the criteria weights by dividing the vector of Gini coefficients by their sum
+    # Calculate and return the criteria weights by dividing the vector of Gini coefficients by their sum
     w = G / np.sum(G)
     return w
 
@@ -293,16 +293,15 @@ def cilos_weighting(matrix, types):
 
     # Determine the weight system matrix
     F = np.diag(-np.sum(pij - np.diag(np.diag(pij)), axis = 0)) + pij
+    
     # Calculate the criterion impact loss weight
     # The criteria weights q are determined from the formulated homogeneous linear system of equations
-    # AA is the vector near 0
-    AA = np.zeros(F.shape[0])
-    # To determine the value of A we assume that the first element of A is close to 0 while others are zeros
-    AA[0] = sys.float_info.epsilon
     # Solve the system equation
-    q = np.linalg.inv(F).dot(AA)
+    q = linalg.null_space(F)
+    
     # Calculate and return the final weights of the criteria
-    return q / np.sum(q)
+    weights = q / np.sum(q)
+    return np.ravel(weights)
 
 
 # IDOCRIW weighting

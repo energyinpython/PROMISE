@@ -4,6 +4,7 @@ from pyrepo import weighting_methods as mcda_weights
 from pyrepo import normalizations as norms
 
 
+
 # Test for CRITIC weighting
 class Test_CRITIC(unittest.TestCase):
 
@@ -131,6 +132,7 @@ class Test_CILOS(unittest.TestCase):
         types = np.array([-1, 1, -1, 1])
 
         test_result = mcda_weights.cilos_weighting(matrix, types)
+        
         real_result = np.array([0.334, 0.220, 0.196, 0.250])
         self.assertEqual(list(np.round(test_result, 3)), list(real_result))
 

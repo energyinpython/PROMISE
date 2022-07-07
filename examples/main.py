@@ -5,19 +5,20 @@ import seaborn as sns
 import pandas as pd
 import matplotlib
 
-# example wind farm location 1
+# example 1 involving the decision problem of selecting the best wind farm location based on:
 """
 Ziemba, P., Wątróbski, J., Zioło, M., & Karczmarczyk, A. (2017). 
 Using the PROSA method in offshore wind farm location problems. Energies, 10(11), 1755.
+DOI: https://doi.org/10.3390/en10111755
 """
 
-# example 2
+# example 2 involving the decision problem of selecting the best wind farm location based on:
 """
 Kizielewicz, B., Wątróbski, J., & Sałabun, W. (2020). Identification of relevant criteria set 
 in the MCDA process—Wind farm location case study. Energies, 13(24), 6548.
 """
 
-from pyrepo.mcda_methods import CRADIS, AHP, MARCOS, PROSA_C, SAW, ARAS, COPRAS, PROMETHEE_II
+from pyrepo.mcda_methods import CRADIS, AHP, MARCOS, SAW, ARAS, COPRAS, PROMETHEE_II, PROSA_C
 from pyrepo.mcda_methods import TOPSIS, VIKOR, MABAC, EDAS, SPOTIS, WASPAS
 
 from pyrepo import normalizations as norms
@@ -26,11 +27,14 @@ from pyrepo import correlations as corrs
 from pyrepo import weighting_methods as mcda_weights
 
 
+
+
 # bar (column) chart
 def plot_barplot(df_plot, legend_title, num):
     """
     Visualization method to display column chart of alternatives rankings obtained with 
     different methods.
+
     Parameters
     ----------
         df_plot : DataFrame
@@ -38,6 +42,7 @@ def plot_barplot(df_plot, legend_title, num):
             The particular rankings are included in subsequent columns of DataFrame.
         title : str
             Title of the legend (Name of group of explored methods, for example MCDA methods or Distance metrics).
+    
     Examples
     ----------
     >>> plot_barplot(df_plot, legend_title='MCDA methods')
@@ -78,6 +83,7 @@ def draw_heatmap(df_new_heatmap, title, num):
             DataFrame with correlation values between compared rankings
         title : str
             title of chart containing name of used correlation coefficient
+    
     Examples
     ---------
     >>> draw_heatmap(df_new_heatmap, title)
@@ -87,7 +93,7 @@ def draw_heatmap(df_new_heatmap, title, num):
     heatmap = sns.heatmap(df_new_heatmap, annot=True, fmt=".3f", cmap="RdYlGn",
                           linewidth=0.5, linecolor='w')
     plt.yticks(va="center")
-    plt.xlabel('Methods')
+    plt.xlabel('MCDA methods')
     plt.title('Correlation: ' + title)
     plt.tight_layout()
     title = title.replace("$", "")
@@ -111,7 +117,7 @@ class Create_dictionary(dict):
 def main():
 
     # Example 1
-
+    # Decision matrix
     matrix = np.array([[16347, 14219, 8160, 8160],
     [9, 8.5, 9, 8.5],
     [73.8, 55, 64.8, 62.5],
@@ -125,43 +131,50 @@ def main():
     [1720524, 1496512, 858830, 858830],
     [40012, 34803, 19973, 19973]])
 
+    # Transpose the decision matrix to place alternatives in rows and criteria in columns
     matrix = matrix.T
 
+    # Provide weights
     weights = np.array([20, 5, 5, 1.67, 1.67, 11.67, 11.67, 5, 5, 16.67, 8.33, 8.33])
+    # Normalize weight values using sum normalization
+    # All weights must sum to 1
     weights = weights / np.sum(weights)
 
+    # provide criteria types. 1 represents profit criteria and -1 denotes cost criteria.
+    # Other values are not allowed.
     types = np.array([-1, -1, -1, -1, -1, 1, -1, -1, 1, -1, 1, 1])
 
+    # Rows names
     alt_names = [r'$A_{' + str(el) + '}$' for el in range(1, matrix.shape[0] + 1)]
+    # Columns names
     col_names = [r'$C_{' + str(el) + '}$' for el in range(1, matrix.shape[1] + 1)]
+    # save the DataFrame with dataset to csv file
     df_ex1 = pd.DataFrame(matrix, index = alt_names, columns = col_names)
     df_ex1 = df_ex1.rename_axis('Ai')
     df_ex1.to_csv('./results/dataset1.csv')
 
+    # Create the DataFrame for rankings
     rank_results = pd.DataFrame(index=alt_names)
-
-    p = np.array([7280, 4, 13.4, 7.4, 3, 1662, 3, 3, 13.8, 3, 766240, 17820])
-    u = np.sqrt(np.sum(np.square(np.mean(matrix, axis = 0) - matrix), axis = 0) / matrix.shape[0])
-    q = 0.5 * u
-    s = np.repeat(0.3, len(weights))
 
     
     # PROMETHEE II
+    p = np.array([7280, 4, 13.4, 7.4, 3, 1662, 3, 3, 13.8, 3, 766240, 17820])
     promethee_II = PROMETHEE_II()
     preference_functions = [promethee_II._vshape_function for pf in range(len(weights))]
 
-    pref = promethee_II(matrix, weights, types, preference_functions, p, q)
+    pref = promethee_II(matrix, weights, types, preference_functions, p = p)
     rank = rank_preferences(pref, reverse=True)
     rank_results['PROMETHEE II'] = rank
 
     # PROSA-C
+    s = np.repeat(0.3, len(weights))
     prosa_c = PROSA_C()
-    pref = prosa_c(matrix, weights, types, preference_functions, p, q, s)
+    pref = prosa_c(matrix, weights, types, preference_functions, p = p, s = s)
     rank = rank_preferences(pref, reverse=True)
     rank_results['PROSA C'] = rank
 
     # ARAS sum norm
-    aras = ARAS()
+    aras = ARAS(normalization_method=norms.linear_normalization)
     pref = aras(matrix, weights, types)
     rank = rank_preferences(pref, reverse=True)
     rank_results['ARAS'] = rank
@@ -190,12 +203,7 @@ def main():
     rank = rank_preferences(pref, reverse=True)
     rank_results['SAW'] = rank
 
-    # jeszcze jedna ?
-    # topsis = TOPSIS(normalization_method=norms.linear_normalization)
-    # pref = topsis(matrix, weights, types)
-    # rank = rank_preferences(pref, reverse=True)
-    # rank_results['TOPSIS'] = rank
-
+    # VIKOR
     vikor = VIKOR()
     pref = vikor(matrix, weights, types)
     rank = rank_preferences(pref, reverse=False)
@@ -244,8 +252,6 @@ def main():
 
     weights = mcda_weights.entropy_weighting(matrix)
 
-    
-
     alt_names = [r'$A_{' + str(el) + '}$' for el in range(1, matrix.shape[0] + 1)]
     col_names = [r'$C_{' + str(el) + '}$' for el in range(1, matrix.shape[1] + 1)]
     df_ex2 = pd.DataFrame(matrix, index = alt_names, columns = col_names)
@@ -255,7 +261,7 @@ def main():
     rank_results = pd.DataFrame(index=alt_names)
 
     promethee_II = PROMETHEE_II()
-    preference_functions = [promethee_II._vshape_function for pf in range(len(weights))]
+    preference_functions = [prosa_c._vshape_function for pf in range(len(weights))]
 
     pref = promethee_II(matrix, weights, types, preference_functions)
     rank = rank_preferences(pref, reverse=True)
@@ -268,7 +274,7 @@ def main():
     q = 0.5 * u
     s = np.repeat(0.3, len(weights))
 
-    pref = prosa_c(matrix, weights, types, preference_functions, p, q, s)
+    pref = prosa_c(matrix, weights, types, preference_functions, p = p, q = q, s = s)
     rank = rank_preferences(pref, reverse=True)
     rank_results['PROSA C'] = rank
 
@@ -291,22 +297,18 @@ def main():
     rank = rank_preferences(pref, reverse = False)
     rank_results['SPOTIS'] = rank
 
-    # EDAS 
     # EDAS preferences must be sorted in descending order
     edas = EDAS()
     pref = edas(matrix, weights, types)
     rank = rank_preferences(pref, reverse = True)
     rank_results['EDAS'] = rank
 
-
-    # MABAC
     # MABAC preferences must be sorted in descending order
     mabac = MABAC(normalization_method = norms.minmax_normalization)
     pref = mabac(matrix, weights, types)
     rank = rank_preferences(pref, reverse = True)
     rank_results['MABAC'] = rank
 
-    # jeszcze jedna ?
     # CRADIS linear norm
     cradis = CRADIS(normalization_method=norms.minmax_normalization)
     pref = cradis(matrix, weights, types)
@@ -318,7 +320,6 @@ def main():
     print(rank_results)
     matplotlib.rc_file_defaults()
     plot_barplot(rank_results, legend_title='MCDA methods', num = 2)
-
 
 
     method_types = list(rank_results.columns)

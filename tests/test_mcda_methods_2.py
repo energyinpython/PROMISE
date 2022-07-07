@@ -282,7 +282,6 @@ class Test_AHP_2(unittest.TestCase):
         types = np.array([1, 1, 1, 1, 1, 1, 1])
 
         ahp = AHP(normalization_method=norms.linear_normalization)
-        pref = ahp(matrix, weights, types)
 
         test_result = ahp(matrix, weights, types)
         

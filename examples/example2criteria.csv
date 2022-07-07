@@ -1,4 +1,4 @@
-Cj,Name,Unit,Preference Direction
+Cj,Criterion Name,Unit of Measurement,Preference Direction
 C1,yearly amount of energy generated,(MWh),Max
 C2,average wind speed at the height of 100 m,(m/s),Max
 C3,distance from power grid connection,(km),Min
