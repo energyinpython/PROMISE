@@ -30,7 +30,7 @@ class Test_PROMETHEE_II(unittest.TestCase):
         p = 2 * np.ones(len(weights))
         q = 1 * np.ones(len(weights))
 
-        test_result = promethee_II(matrix, weights, types, preference_functions, p, q)
+        test_result = promethee_II(matrix, weights, types, preference_functions = preference_functions, p = p, q = q)
         real_result = np.array([-0.26, -0.52, -0.22, 0.36, 0.7, -0.06])
         self.assertEqual(list(np.round(test_result, 2)), list(real_result))
 
@@ -71,7 +71,7 @@ class Test_PROMETHEE_II_2(unittest.TestCase):
         promethee_II = PROMETHEE_II()
         preference_functions = [promethee_II._linear_function for pf in range(len(weights))]
 
-        test_result = promethee_II(matrix, weights, types, preference_functions, p, q)
+        test_result = promethee_II(matrix, weights, types, preference_functions = preference_functions, p = p, q = q)
         
         real_result = np.array([-0.4143, -0.5056, -0.2317, -0.2892, 0.3313, 0.0619, 0.4296, 0.1626, 0.4554])
 
@@ -111,7 +111,7 @@ class Test_PROMETHEE_II_3(unittest.TestCase):
         promethee_II = PROMETHEE_II()
         preference_functions = [promethee_II._vshape_function for pf in range(len(weights))]
 
-        test_result = promethee_II(matrix, weights, types, preference_functions, p)
+        test_result = promethee_II(matrix, weights, types, preference_functions = preference_functions, p = p)
         
         real_result = np.array([-0.0445, 0.1884, -0.0954, -0.0485])
 
@@ -156,7 +156,7 @@ class Test_PROSA_C(unittest.TestCase):
         prosa_c = PROSA_C()
         preference_functions = [prosa_c._linear_function for pf in range(len(weights))]
 
-        test_result = prosa_c(matrix, weights, types, preference_functions, p, q, s)
+        test_result = prosa_c(matrix, weights, types, preference_functions = preference_functions, p = p, q = q, s = s)
         
         real_result = np.array([-0.5921, -0.6014, -0.3240, -0.4381, 0.2791, -0.0703, 0.3739, 0.0451, 0.3592])
 
@@ -221,6 +221,9 @@ class Test_AHP(unittest.TestCase):
         # step 5 consistency check of pairwise comparison matrices of the alternatives
 
         # step 6 compute local priority vectors of alternatives
+        # select the method to calculate priority vector
+        # the default method to calculate priority vector is ahp._calculate_eigenvector
+        # calculate_priority_vector_method = ahp._calculate_eigenvector
         test_result = ahp._classic_ahp(alt_matrices, weights)
         
         real_result = np.array([0.117, 0.071, 0.095, 0.212, 0.350, 0.155])

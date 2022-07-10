@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pyrepo-aleksandraba",
-    version="0.0.15",
+    version="0.0.18",
     author="Aleksandra Bączkiewicz",
     author_email="aleksandra.baczkiewicz@phd.usz.edu.pl",
     description="Python library for Multi-Criteria Decision Analysis.",

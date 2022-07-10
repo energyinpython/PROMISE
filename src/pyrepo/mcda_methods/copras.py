@@ -1,13 +1,19 @@
 import numpy as np
+from ..normalizations import sum_normalization
 from .mcda_method import MCDA_method
 
 
 class COPRAS(MCDA_method):
-    def __init__(self):
+    def __init__(self, normalization_method = sum_normalization):
         """
-        Create the COPRAS method object
+        Create the COPRAS method object and select normalization method `normalization_method`
+
+        Parameters
+        -----------
+            normalization_method : function
+                method for decision matrix normalization chosen from `normalizations`
         """
-        pass
+        self.normalization_method = normalization_method
 
     def __call__(self, matrix, weights, types):
         """
@@ -29,18 +35,19 @@ class COPRAS(MCDA_method):
 
         Examples
         ----------
-        >>> copras = COPRAS()
+        >>> copras = COPRAS(normalization_method = sum_normalization)
         >>> pref = copras(matrix, weights, types)
         >>> rank = rank_preferences(pref, reverse = True)
         """
 
         COPRAS._verify_input_data(matrix, weights, types)
-        return COPRAS._copras(matrix, weights, types)
+        return COPRAS._copras(matrix, weights, types, self.normalization_method)
 
     @staticmethod
-    def _copras(matrix, weights, types):
-        # Normalize matrix using the linear normalization method.
-        norm_matrix = matrix/np.sum(matrix, axis = 0)
+    def _copras(matrix, weights, types, normalization_method):
+        # Normalize matrix as for profit criteria using chosen normalization method.
+        # norm_matrix = matrix/np.sum(matrix, axis = 0)
+        norm_matrix = normalization_method(matrix, np.ones(len(weights)))
         # Multiply all values in the normalized matrix by weights.
         d = norm_matrix * weights
         # Calculate the sums of weighted normalized outcomes for profit criteria.

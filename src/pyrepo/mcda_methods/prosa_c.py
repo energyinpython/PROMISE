@@ -14,7 +14,12 @@ class PROSA_C(PROMETHEE_II):
         pass
 
 
-    def __call__(self, matrix, weights, types, preference_functions, p = None, q = None, s = None):
+    def __call__(self, matrix, weights, types, preference_functions = None, p = None, q = None, s = None):
+        PROSA_C._verify_input_data(matrix, weights, types)
+        
+        if preference_functions is None:
+            preference_functions = [self._usual_function for pf in range(len(weights))]
+
         if p is None:
             u = np.sqrt(np.sum(np.square(np.mean(matrix, axis = 0) - matrix), axis = 0) / matrix.shape[0])
             p = 2 * u
@@ -43,7 +48,7 @@ class PROSA_C(PROMETHEE_II):
     @staticmethod
     def _prosa_c(self, matrix, weights, types, preference_functions, p, q, s):
         """
-        Score alternatives provided in decision matrix `matrix` using criteria `weights` and criteria `types`.
+        Score alternatives provided in the decision matrix `matrix` using criteria `weights` and criteria `types`.
         
         Parameters
         -----------
@@ -86,6 +91,7 @@ class PROSA_C(PROMETHEE_II):
         # Determination of deviations based on pair-wise comparisons,
         # Application of the preference function,
         # Calculation of a single criterion net outranking flow
+        # preference functions are inherited from the PROMETHEE II class
         for j, i, k in itertools.product(range(n), range(m), range(m)):
             phi[i, j] += preference_functions[j](types[j] * (matrix[i, j] - matrix[k, j]), p[j], q[j]) -\
                 preference_functions[j](types[j] * (matrix[k, j] - matrix[i, j]), p[j], q[j])

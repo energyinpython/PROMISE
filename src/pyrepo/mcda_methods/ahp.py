@@ -57,7 +57,7 @@ class AHP(MCDA_method):
 
     def _check_consistency(self, X):
         """
-        Consistency Check on the Pairwise Comparison Matrix of the Criteria
+        Consistency Check on the Pairwise Comparison Matrix of the Criteria or alternatives
 
         Parameters
         -----------
@@ -82,7 +82,7 @@ class AHP(MCDA_method):
 
     def _calculate_eigenvector(self, X):
         """
-        Compute the Priority Vector of Criteria (weights) using Eigenvector method
+        Compute the Priority Vector of Criteria (weights) or alternatives using Eigenvector method
 
         Parameters
         -----------
@@ -112,9 +112,9 @@ class AHP(MCDA_method):
         return S
 
 
-    def _normalized_column_sum_method_classic(self, X):
+    def _normalized_column_sum(self, X):
         """
-        Compute the Priority Vector of Criteria (weights) using The normalized column sum method
+        Compute the Priority Vector of Criteria (weights) or alternatives using The normalized column sum method
 
         Parameters
         -----------
@@ -135,16 +135,47 @@ class AHP(MCDA_method):
         [3, 7, 5, 3, 1, 7],
         [1/3, 1, 1, 1/3, 1/7, 1]])
         >>> ahp = AHP()
-        >>> S = ahp._normalized_column_sum_method_classic(PCM1)
+        >>> S = ahp._normalized_column_sum(PCM1)
         """
         return np.sum(X, axis = 1) / np.sum(X)
 
+
+    def _geometric_mean(self, X):
+        """
+        Compute the Priority Vector of Criteria (weights) or alternatives using The geometric mean method
+
+        Parameters
+        -----------
+            X : ndarray
+                matrix of pairwise comparisons
+
+        Returns
+        ---------
+            ndarray
+                Vector with weights calculated with The geometric mean method
+
+        Examples
+        ----------
+        >>> PCM1 = np.array([[1, 5, 1, 1, 1/3, 3],
+        [1/5, 1, 1/3, 1/5, 1/7, 1],
+        [1, 3, 1, 1/3, 1/5, 1],
+        [1, 5, 3, 1, 1/3, 3],
+        [3, 7, 5, 3, 1, 7],
+        [1/3, 1, 1, 1/3, 1/7, 1]])
+        >>> ahp = AHP()
+        >>> S = ahp._geometric_mean(PCM1)
+        """
+        n = X.shape[1]
+        numerator = (np.prod(X, axis = 1))**(1 / n)
+        denominator = np.sum(numerator)
+        return numerator / denominator
+
     
-    def _classic_ahp(self, alt_matrices, weights):
+    def _classic_ahp(self, alt_matrices, weights, calculate_priority_vector_method = None):
         """
         Calculate the global alternative priorities.
-        This is method for classic AHP where you provide matrices with values of pairwise 
-        comparisons of alternatives and weights in form of priority vector.
+        This is a method for classic AHP where you provide matrices with values of pairwise 
+        comparisons of alternatives and weights in the form of a priority vector.
 
         Parameters
         ------------
@@ -152,6 +183,12 @@ class AHP(MCDA_method):
                 list with matrices including values of pairwise comparisons of alternatives
             weights : ndarray
                 priority vector of criteria (weights)
+            calculate_priority_vector_method : function
+                Method for calculation of the priority vector. It can be chosen from three
+                available methods: _calculate_eigenvector, _normalized_column_sum and
+                _geometric_mean
+                if the user does not provide calculate_priority_vector_method, it is automatically
+                set as the default _calculate_eigenvector
 
         Returns
         ---------
@@ -196,18 +233,25 @@ class AHP(MCDA_method):
         >>> alt_matrices.append(PCM3)
         >>> alt_matrices.append(PCM4)
 
-        >>> pref = ahp._classic_ahp(alt_matrices, weights)
+        >>> calculate_priority_vector_method = ahp._calculate_eigenvector
+        >>> pref = ahp._classic_ahp(alt_matrices, weights, calculate_priority_vector_method)
         >>> rank = rank_preferences(pref, reverse = True)
         """
+
+        # eigenvector method is default method to calculate priority vector
+        if calculate_priority_vector_method is None:
+            calculate_priority_vector_method = self._calculate_eigenvector
+        # Check consistency of all pairwise comparison matrices for alternatives 
         for alt in alt_matrices:
             self._check_consistency(alt)
 
         m = alt_matrices[0].shape[0]
         n = len(weights)
 
+        # Calculate priority vector withe selected method
         S = np.zeros((m, n))
         for el, alt in enumerate(alt_matrices):
-            S[:, el] = self._calculate_eigenvector(alt)
+            S[:, el] = calculate_priority_vector_method(alt)
 
         # Calculate the global alternative priorities
         # Calculate the weighted matrix
@@ -226,7 +270,7 @@ class AHP(MCDA_method):
         Parameters
         ------------
         matrix : ndarray
-                Decision matrix with numerical performance values of alternatives. Decision matrix 
+                Decision matrix with numerical performance values of alternatives. The decision matrix 
                 includes m alternatives in rows and n criteria in columns.
         weights: ndarray
             Vector with criteria weights given in numerical values. The sum of weights 
