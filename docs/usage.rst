@@ -759,7 +759,7 @@ Output
 	Ranking:  [5 6 4 2 1 3]
 	
 	
-Usage examples for other preference functions
+Usage examples for other preference functions with matrix, weights, types, p, and q provided above for PROMETHEE II
 
 
 Usual
@@ -834,7 +834,7 @@ Level
 
 	promethee_II = PROMETHEE_II()
 	preference_functions = [promethee_II._level_function for pf in range(len(weights))]
-	pref = promethee_II(matrix, weights, types, preference_functions = preference_functions, p = p)
+	pref = promethee_II(matrix, weights, types, preference_functions = preference_functions, p = p, q = q)
 	rank = rank_preferences(pref, reverse=True)
 
 	print('Preference values: ', np.round(pref, 4))
@@ -856,7 +856,7 @@ Linear
 
 	promethee_II = PROMETHEE_II()
 	preference_functions = [promethee_II._linear_function for pf in range(len(weights))]
-	pref = promethee_II(matrix, weights, types, preference_functions = preference_functions, p = p)
+	pref = promethee_II(matrix, weights, types, preference_functions = preference_functions, p = p, q = q)
 	rank = rank_preferences(pref, reverse=True)
 
 	print('Preference values: ', np.round(pref, 4))
@@ -878,7 +878,7 @@ Gaussian
 
 	promethee_II = PROMETHEE_II()
 	preference_functions = [promethee_II._gaussian_function for pf in range(len(weights))]
-	pref = promethee_II(matrix, weights, types, preference_functions = preference_functions, p = p)
+	pref = promethee_II(matrix, weights, types, preference_functions = preference_functions, p = p, q = q)
 	rank = rank_preferences(pref, reverse=True)
 
 	print('Preference values: ', np.round(pref, 4))

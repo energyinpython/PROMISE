@@ -27,7 +27,7 @@ def main():
     promethee_II = PROMETHEE_II()
 
     # provide preference functions selected from six preference functions available for PROMETHEE II for each criterion
-    preference_functions = [promethee_II._gaussian_function for pf in range(len(weights))]
+    preference_functions = [promethee_II._level_function for pf in range(len(weights))]
 
     # Calculate the PROMETHEE II preference values of alternatives
     pref = promethee_II(matrix, weights, types, preference_functions = preference_functions, p = p, q = q)
