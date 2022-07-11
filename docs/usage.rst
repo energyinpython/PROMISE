@@ -759,10 +759,10 @@ Output
 	Ranking:  [5 6 4 2 1 3]
 	
 	
-Usage examples for other preference functions with matrix, weights, types, p, and q provided above for PROMETHEE II
+*Usage examples for other preference functions with matrix, weights, types, p, and q provided above for PROMETHEE II*
 
 
-Usual
+*Usual*
 
 .. code-block:: python
 
@@ -784,7 +784,7 @@ Output
 
 
 
-U-shape
+*U-shape*
 
 .. code-block:: python
 
@@ -806,7 +806,7 @@ Output
 
 
 
-V-shape
+*V-shape*
 
 .. code-block:: python
 
@@ -828,7 +828,7 @@ Output
 
 
 
-Level
+*Level*
 
 .. code-block:: python
 
@@ -850,7 +850,7 @@ Output
 
 
 
-Linear
+*Linear*
 
 .. code-block:: python
 
@@ -872,7 +872,7 @@ Output
 
 
 
-Gaussian
+*Gaussian*
 
 .. code-block:: python
 
@@ -999,7 +999,7 @@ ___________________________________________
 Methods for determining compromise rankings
 _____________________________________________
 	
-The Copeland Method for compromise ranking
+*The Copeland Method for compromise ranking*
 
 This method is used to generate compromise ranking based on several rankings provided by different MCDA methods. The ``copeland`` method requires
 providing two-dimensional matrix ``matrix`` with different rankings in particular columns. ``copeland`` returns vector with compromise ranking.
@@ -1034,7 +1034,7 @@ Output
 
 
 	
-The Dominance Directed Graph
+*The Dominance Directed Graph*
 
 This method is used to generate compromise ranking based on several rankings provided by different MCDA methods. The ``dominance_directed_graph`` method requires
 providing two-dimensional matrix ``matrix`` with different rankings in particular columns. ``dominance_directed_graph`` returns vector with compromise ranking.
@@ -1062,7 +1062,7 @@ Output
 
 	
 	
-The Rank Position compromise ranking method
+*The Rank Position compromise ranking method*
 
 This method is used to generate compromise ranking based on several rankings provided by different MCDA methods. The ``rank_position_method`` method requires
 providing two-dimensional matrix ``matrix`` with different rankings in particular columns. ``rank_position_method`` returns vector with compromise ranking.
@@ -1090,7 +1090,7 @@ Output
 
 
 	
-The Improved Borda Rule compromise ranking method for MULTIMOORA
+*The Improved Borda Rule compromise ranking method for MULTIMOORA*
 
 This method is used to generate compromise ranking based on three rankings provided by particular approaches (RS, RP and FMF) of MULTIMOORA method. The ``improved_borda_rule`` method requires
 providing two-dimensional matrix ``matrix`` with three rankings in particular columns. ``improved_borda_rule`` returns vector with compromise ranking.
@@ -1126,7 +1126,7 @@ Output
 Correlation coefficients
 __________________________
 
-Spearman correlation coefficient
+*Spearman correlation coefficient*
 
 This method is used to calculate correlation between two different rankings. It requires two vectors ``R`` and ``Q`` with rankings of the same size. It returns value
 of correlation.
@@ -1152,7 +1152,7 @@ Output
 
 	
 	
-Weighted Spearman correlation coefficient
+*Weighted Spearman correlation coefficient*
 
 This method is used to calculate correlation between two different rankings. It requires two vectors ``R`` and ``Q`` with rankings of the same size. It returns value
 of correlation.
@@ -1178,7 +1178,7 @@ Output
 	
 	
 	
-Similarity rank coefficient WS
+*Similarity rank coefficient WS*
 
 This method is used to calculate similarity between two different rankings. It requires two vectors ``R`` and ``Q`` with rankings of the same size. It returns value
 of similarity.
@@ -1204,7 +1204,7 @@ Output
 
 	
 	
-Pearson correlation coefficient
+*Pearson correlation coefficient*
 
 This method is used to calculate correlation between two different rankings. It requires two vectors ``R`` and ``Q`` with rankings of the same size. It returns value
 of correlation.
@@ -1233,7 +1233,7 @@ Output
 Methods for criteria weights determination
 ___________________________________________
 
-Entropy weighting method
+*Entropy weighting method*
 
 This method is used to calculate criteria weights based on alternatives perfromance values provided in decision matrix. This method requires
 providing two-dimensional decision matrix ``matrix`` with perfromance values of alternatives in rows considering criteria in columns. It returns
@@ -1260,7 +1260,7 @@ Output
 	Entropy weights:  [0.463  0.3992 0.1378 0.    ]
 	
 
-CRITIC weighting method
+*CRITIC weighting method*
 
 This method is used to calculate criteria weights based on alternatives perfromance values provided in decision matrix. This method requires
 providing two-dimensional decision matrix ``matrix`` with perfromance values of alternatives in rows considering criteria in columns. It returns
@@ -1288,7 +1288,7 @@ Output
 	CRITIC weights:  [0.157  0.2495 0.1677 0.1211 0.1541 0.1506]
 
 
-Standard deviation weighting method
+*Standard deviation weighting method*
 
 This method is used to calculate criteria weights based on alternatives perfromance values provided in decision matrix. This method requires
 providing two-dimensional decision matrix ``matrix`` with perfromance values of alternatives in rows considering criteria in columns. It returns
@@ -1316,7 +1316,7 @@ Output
 	Standard deviation weights:  [0.2173 0.2945 0.4882]
 	
 	
-Equal weighting method
+*Equal weighting method*
 		
 .. code-block:: python
 
@@ -1339,7 +1339,7 @@ Output
 	Equal weights:  [0.333 0.333 0.333]
 
 
-Gini coefficient-based weighting method
+*Gini coefficient-based weighting method*
 		
 .. code-block:: python
 
@@ -1378,7 +1378,7 @@ Output
 	Gini coefficient-based weights:  [0.0362 0.0437 0.0848 0.0984 0.048  0.0842 0.1379 0.1125 0.0745 0.1107 0.169 ]
 
 
-MEREC weighting method
+*MEREC weighting method*
 		
 .. code-block:: python
 
@@ -1404,7 +1404,7 @@ Output
 	MEREC weights:  [0.5752 0.0141 0.4016 0.0091]
 
 
-Statistical variance weighting method
+*Statistical variance weighting method*
 		
 .. code-block:: python
 
@@ -1428,7 +1428,7 @@ Output
 	Statistical variance weights:  [0.3441 0.3497 0.3062]
 
 
-CILOS weighting method
+*CILOS weighting method*
 		
 .. code-block:: python
 
@@ -1453,7 +1453,7 @@ Output
 	CILOS weights:  [0.334 0.22  0.196 0.25 ]
 
 
-IDOCRIW weighting method
+*IDOCRIW weighting method*
 		
 .. code-block:: python
 
@@ -1477,7 +1477,7 @@ Output
 	IDOCRIW weights:  [0.166 0.189 0.355 0.291]
 	
 
-Angle weighting method
+*Angle weighting method*
 		
 .. code-block:: python
 
@@ -1502,7 +1502,7 @@ Output
 	Angle weights:  [0.415  0.3612 0.2227 0.0012]
 
 
-Coefficient of variation weighting method
+*Coefficient of variation weighting method*
 		
 .. code-block:: python
 
@@ -1555,7 +1555,7 @@ Here are two examples of using distance metrics for Euclidean distance ``euclide
 provided in module ``distance metrics`` is analogous.
 
 
-Euclidean distance
+*Euclidean distance*
 
 This method is used to calculate the Euclidean distance between two vectors ``A`` and ``B`` containing real values. The size od ``A`` and ``B`` must be the same.
 This method returns value of Euclidean distance between vectors ``A`` and ``B``.
@@ -1578,7 +1578,7 @@ Output
 	Distance:  0.1411
 	
 	
-Manhattan distance
+*Manhattan distance*
 
 This method is used to calculate the Manhattan distance between two vectors ``A`` and ``B`` containing real values. The size od ``A`` and ``B`` must be the same.
 This method returns value of Manhattan distance between vectors ``A`` and ``B``.
@@ -1608,7 +1608,7 @@ Here is an example of vector normalization usage. Other normalizations provided 
 ``sum_normalization``, ``linear_normalization``, ``multimoora_normalization`` are used in analogous way.
 
 
-Vector normalization
+*Vector normalization*
 
 This method is used to normalize decision matrix ``matrix``. It requires providing decision matrix ``matrix`` with performance values of alternatives in rows
 considering criteria in columns and vector with criteria types ``types``. This method returns normalized matrix.
@@ -1645,7 +1645,7 @@ Output
 Methods for sensitivity analysis considering criteria weights modification
 __________________________________________________________________________
 
-Sensitivity_analysis_weights_percentages
+*Sensitivity_analysis_weights_percentages*
 
 This method is used to perform the procedure of sensitivity analysis considering percentage modification the weight value of chosen criterion.
 This method requires providing two-dimensional decision matrix ``matrix``, vector with criteria weights ``weights``, vector with criteria types ``types``, 
@@ -1694,7 +1694,7 @@ ways: when you want only increase weight value: [1], when you want only decrease
 	# method ``method``, index of chosen criterion whose weight will be modified and list with directions of weights value modification
 	data_sens = sensitivity_analysis(matrix, weights, types, percentages, method, j, [1])
 
-Sensitivity_analysis_weights_values
+*Sensitivity_analysis_weights_values*
 
 This method is used to perform the procedure of sensitivity analysis considering setting chosen value as the weight of selected criterion.
 This method requires providing two-dimensional decision matrix ``matrix``, vector with values ``weight_values`` 
