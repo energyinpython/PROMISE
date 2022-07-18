@@ -987,11 +987,185 @@ The SAW method
 ___________________________________________
 
 
+The SAW method is used to obtain utility function values for alternatives. Then alternatives have to be ranked according to utility
+function values in descending order. There is a possibility to select the normalization method of the decision matrix during the SAW method
+object initialization. The default normalization for SAW is ``linear_normalization``. If you do not provide a normalization method,
+it will be set automatically to ``linear_normalization``. The ranking is generated using ``rank_preferences`` method from ``additions`` submodule
+providing utility function values ``pref`` as argument and setting parameter ``reverse`` as ``True`` because we need to sort preferences descendingly.
+
+
+.. code-block:: python
+
+	import numpy as np
+	from pyrepo.mcda_methods import SAW
+	from pyrepo import normalizations as norms
+	from pyrepo.additions import rank_preferences
+
+
+	# provide decision matrix in array numpy.darray
+	matrix = np.array([[0.75, 0.50, 0.75, 0, 0, 0, 1],
+	[0.75, 1, 0.75, 0, 0, 0, 0.75],
+	[0.75, 0.75, 0.75, 0, 0.50, 0.25, 1],
+	[0.50, 0.50, 0.75, 1, 0.50, 0, 0.75]])
+
+	# provide criteria weights in array numpy.darray. All weights must sum to 1.
+	weights = np.array([0.1, 0.1, 0.1, 0.15, 0.2, 0.25, 0.1])
+
+	# provide criteria types in array numpy.darray. Profit criteria are represented by 1, and cost criteria by -1.
+	types = np.array([1, 1, 1, 1, 1, 1, 1])
+
+	# Create the SAW method object. The default normalization for SAW is ``linear_normalization`` but you can select others.
+	saw = SAW(normalization_method=norms.linear_normalization)
+
+	# Calculate the SAW preference values of alternatives
+	pref = saw(matrix, weights, types)
+
+	# Generate ranking of alternatives by sorting alternatives descendingly according to the SAW algorithm (reverse = True means sorting in descending order) according to preference values
+	rank = rank_preferences(pref, reverse=True)
+
+	print('Preference values: ', np.round(pref, 4))
+	print('Ranking: ', rank)
+
+
+
+Output
+
+.. code-block:: console
+
+	Preference values:  [0.35   0.375  0.825  0.6417]
+	Ranking:  [4 3 1 2]
+	
 
 
 The AHP method
 ___________________________________________
+
+
+The first step of the classical AHP method application requires a matrix of significance comparisons of criteria. Next, check the consistency of the matrix with criteria comparisons. 
+Criteria weights are calculated based on the criteria comparison matrix using one of three methods:  ``_calculate_eigenvector``, ``_normalized_column_sum`` or 
+``_geometric_mean``. Then provide a comparison matrix of alternatives for each criterion. Utility function values of AHP are calculated by ``_classic_ahp`` function. 
+The ranking is generated using the ``rank_preferences`` method from the ``additions`` submodule, providing utility function values ``pref`` as argument and setting parameter 
+``reverse`` as ``True`` because we need to sort preferences descendingly.
+
+
+**Classical AHP**
+
+
+.. code-block:: python
+
+	import numpy as np
+	from pyrepo.mcda_methods import AHP
+	from pyrepo.additions import rank_preferences
+
+	# Step 1 - provide matrix for criteria comparisons
+	PCcriteria = np.array([[1, 1, 5, 3], [1, 1, 5, 3], 
+	[1/5, 1/5, 1, 1/3], [1/3, 1/3, 3, 1]])
+
+	# Create the object of the AHP method
+	ahp = AHP()
+
+	# Step 2 - check consistency of matrix with criteria comparison
+	ahp._check_consistency(PCcriteria)
+
+	# Step 3 - compute priority vector of criteria (weights)
+	weights = ahp._calculate_eigenvector(PCcriteria)
+
+	# Step 4 - provide pairwise comparison matrices of the alternatives for each criterion
+	PCM1 = np.array([[1, 5, 1, 1, 1/3, 3],
+	[1/5, 1, 1/3, 1/5, 1/7, 1],
+	[1, 3, 1, 1/3, 1/5, 1],
+	[1, 5, 3, 1, 1/3, 3],
+	[3, 7, 5, 3, 1, 7],
+	[1/3, 1, 1, 1/3, 1/7, 1]])
+	PCM2 = np.array([[1, 7, 3, 1/3, 1/3, 1/3],
+	[1/7, 1, 1/3, 1/7, 1/9, 1/7],
+	[1/3, 3, 1, 1/5, 1/5, 1/5],
+	[3, 7, 5, 1, 1, 1],
+	[3, 9, 5, 1, 1, 1],
+	[3, 7, 5, 1, 1, 1]])
+	PCM3 = np.array([[1, 1/9, 1/7, 1/9, 1, 1/5],
+	[9, 1, 1, 1, 5, 3],
+	[7, 1, 1, 1, 5, 1],
+	[9, 1, 1, 1, 7, 3],
+	[1, 1/5, 1/5, 1/7, 1, 1/3],
+	[5, 1/3, 1, 1/3, 3, 1]])
+	PCM4 = np.array([[1, 1/5, 1/5, 1/3, 1/7, 1/5],
+	[5, 1, 1, 3, 1/3, 1],
+	[5, 1, 1, 1, 1/3, 1],
+	[3, 1/3, 1, 1, 1/7, 1],
+	[7, 3, 3, 7, 1, 5],
+	[5, 1, 1, 1, 1/5, 1]])
+
+	# Form pairwise comparison matrices of the alternatives for each criterion
+	alt_matrices = []
+	alt_matrices.append(PCM1)
+	alt_matrices.append(PCM2)
+	alt_matrices.append(PCM3)
+	alt_matrices.append(PCM4)
+
+	# Step 5 - Consistency check of pairwise comparison matrices of the alternatives
+
+	# Compute local priority vectors of alternatives
+	# select the method to calculate priority vector
+	# the default method to calculate priority vector is ahp._calculate_eigenvector
+	pref = ahp._classic_ahp(alt_matrices, weights, calculate_priority_vector_method = ahp._calculate_eigenvector)
+
+	# Step 6 - Generate ranking of alternatives by sorting alternatives descendingly according to the SAW algorithm (reverse = True means sorting in descending order) according to preference values
+	rank = rank_preferences(pref, reverse=True)
+
+	print('Preference values: ', np.round(pref, 4))
+	print('Ranking: ', rank)
+
+
+
+Output
+
+.. code-block:: console
+
+	Preference values:  [0.1174 0.0713 0.0947 0.2116 0.3501 0.1548]
+	Ranking:  [4 6 5 2 1 3]
 	
+	
+**Another usage of AHP - for numerical values of performances and weights**
+	
+	
+If you have a decision matrix with numerical performance values, a vector with numerical criteria weights, and determined criteria types (profit or cost), 
+you can use the AHP method like other MCDA methods (for example, SAW):
+
+
+.. code-block:: python
+
+	# provide decision matrix in array numpy.darray
+	matrix = np.array([[0.75, 0.50, 0.75, 0, 0, 0, 1],
+	[0.75, 1, 0.75, 0, 0, 0, 0.75],
+	[0.75, 0.75, 0.75, 0, 0.50, 0.25, 1],
+	[0.50, 0.50, 0.75, 1, 0.50, 0, 0.75]])
+
+	# provide criteria weights in array numpy.darray. All weights must sum to 1.
+	weights = np.array([0.1, 0.1, 0.1, 0.15, 0.2, 0.25, 0.1])
+
+	# provide criteria types in array numpy.darray. Profit criteria are represented by 1, and cost criteria by -1.
+	types = np.array([1, 1, 1, 1, 1, 1, 1])
+
+	# Create the AHP method object. The default normalization for SAW is ``sum_normalization`` but you can select others.
+	ahp = AHP(normalization_method=norms.sum_normalization)
+
+	# Calculate the AHP preference values of alternatives
+	pref = ahp(matrix, weights, types)
+
+	# Generate ranking of alternatives by sorting alternatives descendingly according to the AHP algorithm (reverse = True means sorting in descending order) according to preference values
+	rank = rank_preferences(pref, reverse=True)
+
+	print('Preference values: ', np.round(pref, 4))
+	print('Ranking: ', rank)
+
+	
+Output
+
+.. code-block:: console
+
+	Preference values:  [0.099  0.1101 0.4581 0.3328]
+	Ranking:  [4 3 1 2]
 
 
 
